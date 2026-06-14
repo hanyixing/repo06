@@ -185,6 +185,20 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- JUnit 5 (Jupiter) 单元测试框架，版本由 spring-boot 依赖管理统一管理 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito 与 JUnit 5 的整合，提供 MockitoExtension -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- JustAuth 第三方统一登录组件 -->
         <dependency>
             <groupId>me.zhyd.oauth</groupId>
@@ -255,6 +269,29 @@
                     </includes>
                     <!--                    <skipTests>true</skipTests>-->
                 </configuration>
+            </plugin>
+            <!-- JaCoCo 单元测试覆盖率报告，报告输出到 target/site/jacoco/index.html -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+                <executions>
+                    <!-- 在测试运行前挂载 JaCoCo agent 收集覆盖率数据 -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!-- 测试结束后生成覆盖率报告 -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
