@@ -1,34 +1,81 @@
-version: '3'
+version: '3.8'
+
 services:
   mysql:
     container_name: bbs-mysql
     image: mysql/mysql-server:5.7
     environment:
       MYSQL_DATABASE: pybbs
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_ROOT_HOST: '%'
       TZ: Asia/Shanghai
     expose:
       - "3306"
     volumes:
       - ./src/main/resources/db/migration:/docker-entrypoint-initdb.d
-      - ./mysql/mysql_data:/var/lib/mysql
-    restart: always
+      - mysql_data:/var/lib/mysql
+    networks:
+      - bbs-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    restart: unless-stopped
 
   server:
     container_name: bbs-server
-    build: .
-    working_dir: /app
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      JAVA_OPTS: ${JAVA_OPTS:--Xms256m -Xmx512m}
     volumes:
-      - ./:/app
-      - ~/.m2:/root/.m2
       - ./logs:/app/logs
       - ./static:/app/static
+      - ./templates:/app/templates
     ports:
-      - "8080:8080"
-    command: mvn clean spring-boot:run -Dspring-boot.run.profiles=docker -Dmaven.test.skip=true
+      - "${SERVER_PORT:-8080}:8080"
+    networks:
+      - bbs-network
     depends_on:
-      - mysql
-    restart: always
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    restart: unless-stopped
+
+networks:
+  bbs-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

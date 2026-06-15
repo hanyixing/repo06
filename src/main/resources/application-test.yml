@@ -1,0 +1,29 @@
+# ==============================================================================
+# Test environment configuration
+# ==============================================================================
+# Usage: spring.profiles.active=test
+
+server:
+  port: 8081
+
+spring:
+  banner:
+    location: classpath:banner.txt
+  freemarker:
+    cache: false
+    settings:
+      template_exception_handler: rethrow
+  devtools:
+    restart:
+      enabled: false
+
+site:
+  datasource_driver: com.mysql.cj.jdbc.Driver
+  datasource_url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/pybbs_test?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+  datasource_username: ${DB_USERNAME:root}
+  datasource_password: ${DB_PASSWORD:}
+
+logging:
+  level:
+    root: WARN
+    co.yiiu: DEBUG

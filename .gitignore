@@ -30,3 +30,40 @@ logs/
 mysql
 static/upload/
 .sass-cache/
+
+# ============================
+# Sensitive configuration files
+# ============================
+# Local environment overrides (never commit secrets)
+src/main/resources/application-local.yml
+src/main/resources/application-local.properties
+
+# Environment variable files
+.env
+.env.*
+!.env.example
+
+# Docker sensitive files
+docker-compose.override.yml
+
+# IDE and OS generated files
+*.swp
+*.swo
+*~
+Thumbs.db
+
+# Build artifacts
+*.jar
+!pybbs.jar
+build/
+
+# Coverage reports
+site/jacoco/
+jacoco.exec
+*.exec
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+

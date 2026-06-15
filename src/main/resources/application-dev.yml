@@ -1,10 +1,35 @@
+# ==============================================================================
+# Development environment configuration
+# ==============================================================================
+# Usage: spring.profiles.active=dev
+
+server:
+  port: 8080
+
+spring:
+  banner:
+    location: file:./banner.txt
+  freemarker:
+    cache: false
+    settings:
+      template_exception_handler: rethrow
+  devtools:
+    restart:
+      enabled: true
+
 site:
   datasource_driver: com.mysql.cj.jdbc.Driver
   datasource_url: jdbc:mysql://localhost:3306/pybbs?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
   datasource_username: root
-  datasource_password: 123123
+  datasource_password: ${DB_PASSWORD:}
 
-# 想看mybatis执行的sql的时候，去掉下面这段的注释
+# Show SQL in dev environment for debugging
 #mybatis-plus:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    root: INFO
+    co.yiiu: DEBUG
+    com.baomidou: DEBUG

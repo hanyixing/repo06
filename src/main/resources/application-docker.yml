@@ -1,5 +1,16 @@
+# ==============================================================================
+# Docker environment configuration
+# ==============================================================================
+# Usage: spring.profiles.active=docker
+# This profile is used when running inside Docker Compose
+
 site:
   datasource_driver: com.mysql.cj.jdbc.Driver
-  datasource_url: jdbc:mysql://mysql:3306/pybbs?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-  datasource_username: root
-  datasource_password: root # 这个密码跟 docker-compose.yml 里的 MYSQL_ROOT_PASSWORD 密码是一样的，不能为空
+  datasource_url: jdbc:mysql://${DB_HOST:mysql}:${DB_PORT:3306}/pybbs?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+  datasource_username: ${DB_USERNAME:root}
+  datasource_password: ${DB_PASSWORD:root}
+
+logging:
+  level:
+    root: INFO
+    co.yiiu: INFO

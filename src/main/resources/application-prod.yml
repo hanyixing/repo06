@@ -1,9 +1,35 @@
+# ==============================================================================
+# Production environment configuration
+# ==============================================================================
+# Usage: spring.profiles.active=prod
+# WARNING: Use environment variables for sensitive data in production!
+#   DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD
+
+server:
+  port: 8080
+
 spring:
   banner:
-    location: file:./banner.txt
+    location: classpath:banner.txt
+  freemarker:
+    cache: true
+    settings:
+      template_exception_handler: rethrow
+      number_format: 0.##
+    template-loader-path: ["classpath:/templates/", "file:./templates/"]
+  devtools:
+    restart:
+      enabled: false
 
 site:
   datasource_driver: com.mysql.cj.jdbc.Driver
-  datasource_url: jdbc:mysql://localhost:3306/pybbs?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-  datasource_username: root
-  datasource_password:
+  datasource_url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/pybbs?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+  datasource_username: ${DB_USERNAME:root}
+  datasource_password: ${DB_PASSWORD}
+
+logging:
+  level:
+    root: WARN
+    co.yiiu: INFO
+  file:
+    name: logs/pybbs.log

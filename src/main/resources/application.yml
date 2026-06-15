@@ -1,8 +1,9 @@
 server:
   port: 8080
+
 spring:
   profiles:
-    active: dev
+    active: @spring.profiles.active@
   banner:
     location: ["classpath:banner.txt", "file:./banner.txt"]
   freemarker:
@@ -19,11 +20,6 @@ spring:
       max-file-size: -1
       max-request-size: -1
 
-
-#  resources:
-#    static-locations: ["classpath:static/", "file:./static/"]
-
-# 配置mapper.xml位置，这个位置可以在pom.xml里配置
 mybatis-plus:
   mapper-locations: classpath:/*Mapper.xml
   global-config:
