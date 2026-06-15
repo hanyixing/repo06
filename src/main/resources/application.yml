@@ -2,7 +2,7 @@ server:
   port: 8080
 spring:
   profiles:
-    active: dev
+    active: '@activatedProperties@'
   banner:
     location: ["classpath:banner.txt", "file:./banner.txt"]
   freemarker:
@@ -28,3 +28,13 @@ mybatis-plus:
   mapper-locations: classpath:/*Mapper.xml
   global-config:
     banner: false
+
+# Actuator 健康检查：仅暴露 health 端点，供 Docker/compose 探活使用
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never

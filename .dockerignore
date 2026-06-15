@@ -1,0 +1,39 @@
+# 减小 Docker 构建上下文，加快构建并避免无关文件进入镜像
+# 注意：不要忽略 pom.xml 与 src（构建所需）
+
+# 构建产物 / 依赖缓存
+target/
+**/target/
+*.jar
+*.war
+
+# 版本控制与 CI 元数据
+.git/
+.gitignore
+.github/
+
+# 文档
+docs/
+*.md
+
+# 运行期数据（由 compose 挂载）
+mysql/
+logs/
+static/upload/
+indexes/
+data/
+
+# IDE / 系统文件
+.idea/
+*.iml
+.vscode/
+.DS_Store
+.sass-cache/
+
+# 本地脚本与环境文件（镜像不需要）
+*.sh
+.env
+*.env
+!.env.example
+docker-compose.yml
+Dockerfile

@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: Build & Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+
+      # test profile 会排除需要 MySQL/ES 的全上下文集成测试，仅跑单元测试；
+      # JaCoCo report 绑定在 test 阶段，产物输出到 target/site/jacoco
+      - name: Run unit tests (profile=test) with coverage
+        run: mvn -B clean test -Ptest
+
+      - name: Upload JaCoCo coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+          if-no-files-found: warn
+
+  docker-build:
+    name: Build Docker Image
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 验证多阶段 Dockerfile 可成功构建（含 -Pprod 打包），不推送镜像仓库
+      - name: Build image (no push)
+        run: docker build -t pybbs:ci .

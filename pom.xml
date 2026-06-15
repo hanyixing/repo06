@@ -40,6 +40,12 @@
             <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
 
+        <!-- actuator 用于健康检查 /actuator/health -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
@@ -232,8 +238,20 @@
                 </includes>
                 <filtering>true</filtering>
             </resource>
+            <!-- 仅对 application*.yml 开启过滤(替换 @activatedProperties@)，避免过滤 static 下的图片等二进制资源 -->
             <resource>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>application*.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>application*.yml</exclude>
+                </excludes>
             </resource>
         </resources>
 
@@ -256,7 +274,67 @@
                     <!--                    <skipTests>true</skipTests>-->
                 </configuration>
             </plugin>
+            <!-- JaCoCo 测试覆盖率报告，报告输出到 target/site/jacoco -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <!-- 多环境 profile：通过 @activatedProperties@ 注入到 application.yml 的 spring.profiles.active -->
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <activatedProperties>dev</activatedProperties>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <activatedProperties>test</activatedProperties>
+            </properties>
+            <build>
+                <plugins>
+                    <!-- CI 只跑单元测试，排除需要 MySQL/ES 的全上下文集成测试 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/PybbsApplicationTests.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <activatedProperties>prod</activatedProperties>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

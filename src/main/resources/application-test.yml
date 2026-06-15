@@ -1,0 +1,9 @@
+# 测试环境配置（CI / 本地测试）
+# 数据源键与 SiteConfig(@ConfigurationProperties(prefix = "site")) 一一对应，不要改成 spring.datasource
+# 说明：CI 默认只跑单元测试(StringUtilTest)，不会连接数据库；
+#      如需在本地以 test profile 跑全上下文测试，请提供一个 pybbs 测试库（账号/密码与下面一致）。
+site:
+  datasource_driver: com.mysql.cj.jdbc.Driver
+  datasource_url: jdbc:mysql://localhost:3306/pybbs?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+  datasource_username: root
+  datasource_password: root

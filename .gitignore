@@ -30,3 +30,16 @@ logs/
 mysql
 static/upload/
 .sass-cache/
+
+# === 敏感配置 / 环境变量（请勿提交真实密钥）===
+.env
+*.env
+!.env.example
+application-local.yml
+application-*-local.yml
+*-secret.yml
+*.secret.yml
+
+# 部署产物
+backup/
+*.pid
